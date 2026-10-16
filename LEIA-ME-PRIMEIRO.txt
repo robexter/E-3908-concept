@@ -1,0 +1,23 @@
+CORRECAO E-3908 CONCEPT — MOBILE V6
+
+1. Extraia o ZIP; abra ABRIR-CORRETOR-E3908.html no Chrome ou Edge.
+2. Clique em "Buscar no GitHub e gerar index.html".
+3. Caso o GitHub não esteja acessível no navegador, baixe manualmente o index.html atual do repositório e selecione-o no corretor.
+4. O corretor gera apenas UM arquivo final: index.html.
+5. Publique esse index.html na RAIZ de https://github.com/robexter/E-3908-concept
+   usando Add file > Upload files > Commit changes.
+6. NÃO publique no repositório central U39-Area-Fria-ConcePT.
+7. NÃO altere sw.js, conteudo-integral.js, laboratorio-concept.js, imagens ou manuais.
+
+ATUALIZAÇÕES
+- Tela aproveita mais largura no celular, com proporção 1280x917, fiel à imagem original.
+- Botão "Ampliar desenho": zoom com deslizamento horizontal; as lâmpadas acompanham a imagem.
+- Lâmpadas reposicionadas por referência visual das tags na imagem original; rótulo invisível não desloca mais o centro do botão.
+- A antiga área inicial "Selecione um equipamento" fica oculta até uma lâmpada ou atalho ser clicado. O painel completo continua funcionando depois do clique.
+
+PRESERVAÇÃO
+- O corretor confere que o conteúdo técnico DATA e os bytes do desenho não foram alterados.
+- Funcionalidades V5 de Conteúdo Integral/Laboratório permanecem inalteradas.
+- Se a estrutura atual do GitHub divergir, o corretor para com uma mensagem em vez de sobrescrever alterações recentes.
+
+ATENÇÃO: a correção ainda precisa ser publicada no GitHub pelo usuário. A conexão do assistente não permite gravar diretamente no repositório.
