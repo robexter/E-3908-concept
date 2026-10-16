@@ -1,0 +1,42 @@
+E-3908 CONCEPT — V7 CORRIGIDA, DIRETO PARA PUBLICAR
+===============================================
+
+O arquivo index.html desta pasta JÁ ESTÁ CORRIGIDO e inclui o desenho e as
+explicações integrais. NÃO é preciso executar preparadores.
+
+PUBLICAÇÃO (página ainda não muda automaticamente)
+1) Abra https://github.com/robexter/E-3908-concept
+2) Add file > Upload files
+3) Arraste SOMENTE index.html desta pasta para substituir o existente na raiz.
+4) Role até o fim e clique em Commit changes.
+
+ATENÇÃO: O service worker atual usa CACHE-FIRST e tem CACHE_NAME antigo.
+Mesmo depois da publicação, visitantes podem continuar vendo HTML antigo.
+Para corrigir definitivamente também o cache:
+5) No MESMO repositório, abra sw.js, clique no lápis (Edit this file).
+6) Troque SOMENTE a primeira linha:
+   const CACHE_NAME = 'e3908-concept-v1-concept-v5-52-mobile-20261015';
+   POR:
+   const CACHE_NAME = 'e3908-concept-v7-final-20261015';
+7) Clique em Commit changes.
+8) Reabra a página em https://robexter.github.io/E-3908-concept/?v=7-final
+   Se estiver com PWA instalado, feche e reabra o app; se necessário, limpe
+   os dados do site no navegador antes de testar.
+
+O QUE MUDA
+- Campo "Selecione um equipamento" removido do estado inicial.
+- Painel técnico só aparece após toque em lâmpada/atalho/Resumo.
+- Painel some ao fechar.
+- Tela de processo com proporção real 1280x917, ocupação maior no mobile.
+- Botão Ampliar desenho e rolagem horizontal da imagem ampliada.
+- 11 lâmpadas com coordenadas recalibradas individualmente.
+- Botões Conteúdo Integral/Laboratório Concept deslocados para abaixo do desenho.
+
+CONTEÚDO PRESERVADO
+Imagem base64 original e bloco DATA integral idênticos aos atuais do GitHub.
+O link da página original e a lógica de treinamentos foram mantidos.
+
+OBSERVAÇÃO
+A correção não altera remotamente o GitHub. O commit precisa ser feito por
+um usuário com permissão de escrita. A integração do ChatGPT recebeu HTTP 403
+nas tentativas de publicar, por isso esta é a via garantida.
