@@ -1,5 +1,4 @@
-const CACHE_NAME = 'e3908-concept-v1-concept-v5-52-mobile-20261015';
-
+const CACHE_NAME = 'e3908-concept-v7-final-20261015';
 const APP_SHELL = [
   './',
   './index.html',
