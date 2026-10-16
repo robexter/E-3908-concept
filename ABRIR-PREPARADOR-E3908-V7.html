@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#061520">
+<title>E-3908 Concept — Preparador V7 Final</title>
+<style>
+:root{color-scheme:dark;--text:#e9f5ff;--line:#335972;--blue:#0c4162;--green:#1c5b3a}
+*{box-sizing:border-box}body{font:15px/1.55 system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--text);background:linear-gradient(135deg,#0c2939,#06131e 80%);margin:0;padding:20px 15px 50px}main{max-width:800px;margin:auto}h1{line-height:1.14;font-size:clamp(24px,5vw,34px)}h2{font-size:19px;margin:0 0 8px}p{margin:9px 0}b,strong{color:white}.card{margin:16px 0;padding:19px;border:1px solid var(--line);border-radius:19px;background:#102635}.small{font-size:13px;color:#bad0df}.mono,code{font:13px/1.4 ui-monospace,Consolas,monospace;color:#9fe5ff;overflow-wrap:anywhere}button{border-radius:12px;border:1px solid #70a8c8;background:var(--blue);color:white;padding:13px 17px;font:bold 15px/1.3 system-ui;min-height:46px;cursor:pointer}button.primary{background:var(--green);border-color:#70c18d}button:disabled{opacity:.6;cursor:wait}a{color:#9fe5ff}input{width:100%;padding:12px;border:1px solid #5e83a0;border-radius:12px;background:#071a27;color:white}ol{padding-left:24px}li{margin:8px 0}#status{border:1px solid #335972;background:#071b28;border-radius:12px;white-space:pre-wrap;padding:12px;min-height:50px}.ok{color:#acfac4}.err{color:#ffc9bb}
+</style>
+</head><body><main>
+<header><p class="small">U-39 · ÁREA FRIA CONCEPT</p><h1>E-3908 — V7 consolidada</h1><p>Refinamento do processo interativo da Desetanizadora: <strong>tela de processo maior no celular</strong>, <strong>lâmpadas alinhadas aos tags</strong> e <strong>remoção do painel “Selecione um equipamento”</strong>.</p></header>
+<section class="card"><h2>1. Gerar o index.html corrigido</h2><p>O preparador lê o arquivo atual do GitHub, aplica somente as correções visuais e preserva integralmente o desenho, as explicações e os recursos V5.</p><button id="online" class="primary" type="button">Gerar index.html V7 a partir do GitHub</button><p class="small">Requer conexão à internet no navegador. O arquivo original nunca é alterado diretamente por este preparador.</p>
+<p><strong>Alternativa:</strong> se a conexão do navegador bloquear a leitura, selecione o <code>index.html</code> atual salvo em seu computador.</p><input id="upload" type="file" accept=".html,text/html"><button id="local" style="margin-top:10px" type="button">Corrigir o arquivo selecionado</button></section>
+<section class="card"><h2>2. Publicar no GitHub</h2><ol><li>Baixe o <code>index.html</code> gerado.</li><li>Abra o <a href="https://github.com/robexter/E-3908-concept" target="_blank" rel="noopener">repositório E-3908-concept</a>.</li><li>Use <b>Add file → Upload files</b> para substituir <strong>somente</strong> o <code>index.html</code> na raiz.</li><li>Confirme <strong>Commit changes</strong> e abra a <a href="https://robexter.github.io/E-3908-concept/" target="_blank" rel="noopener">página da E-3908</a> no celular.</li></ol><p class="small">Não envie este preparador nem o ZIP ao portal central da Área Fria. <b>Não precisa extrair ou modificar sw.js</b>.</p></section>
+<section class="card"><h2>3. O que será ajustado</h2><p>Proporção original <strong>1280 × 917</strong>; margens reduzidas no mobile; zoom opcional; <strong>11 lâmpadas</strong> calibradas a partir do desenho; painel técnico inicial removido e aberto apenas ao selecionar equipamento/atalho; botões de Conteúdo Integral e Laboratório dispostos em área própria, abaixo do desenho.</p><div id="status" aria-live="polite" role="status">Aguardando geração.</div></section>
+</main>
+<script>
+'use strict';
+const REPO='E-3908-concept';
+const MARK='<!-- E3908 V7 CONSOLIDADA 20261015 -->';
+const COORDS={
+ e3908:[40.8,47.2],
+ pic39249:[53.8,23.3],
+ hot_bypass:[60.9,26.7],
+ dp_torre:[43.9,58.0],
+ c3920:[32.2,65.4],
+ tic39332:[9.5,70.7],
+ f3918:[23.0,68.7],
+ f3912:[68.7,37.6],
+ f3917:[73.8,56.6],
+ pi39254:[88.4,24.1],
+ seletor_max:[81.4,12.1]
+};
+const once=(s,find,replace,label)=>{let n=s.split(find).length-1;if(n!==1)throw Error(label+': esperada uma ocorrência, encontradas '+n+'. Nenhuma atualização foi gerada.');return s.replace(find,replace)};
+function fnv(s){let hash=2166136261>>>0;for(let i=0;i<s.length;i++){hash^=s.charCodeAt(i);hash=Math.imul(hash,16777619)>>>0;}return hash>>>0}
+function correct(source){
+ let s=String(source).replace(/^\uFEFF/,'');
+ if(s.includes(MARK))return s;
+ if(!/<title>[^<]*E-3908[^<]*<\/title>/i.test(s)||!s.includes('id="panel"')||!s.includes('data-id="seletor_max"'))throw Error('O arquivo não corresponde à E-3908 Concept reconhecida.');
+ const img=s.match(/data:image\/(?:png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+/),technical=s.match(/const DATA = \{[\s\S]*?\};\s*\nconst panel =/);
+ if(!img||!technical)throw Error('Desenho original ou dados técnicos não localizados; edição cancelada.');
+ const imageHash=fnv(img[0]),dataHash=fnv(technical[0]);
+ const oldV6=s.includes('E3908 REFINAMENTO MOBILE V6: INICIO') || s.includes('id="e3908-stage-viewport"');
+ // A imagem embutida mede 1280 x 917. Não distorcer nem usar a razão 1280/885.
+ if(s.includes('aspect-ratio:1280/885'))s=once(s,'aspect-ratio:1280/885','aspect-ratio:1280/917','Proporção do desenho');
+ else if(!s.includes('aspect-ratio:1280/917'))throw Error('Não foi possível determinar a proporção do desenho.');
+ for(const [id,[x,y]] of Object.entries(COORDS)){
+   let re=new RegExp('(<button\\s+class="lamp"\\s+data-id="'+id+'"\\s+style=")left:[\\d.]+%;top:[\\d.]+%;("\\s+title=)','g');
+   const count=[...s.matchAll(re)].length;
+   if(count!==1)throw Error('Lâmpada '+id+': '+count+' posições identificadas (esperada 1).');
+   s=s.replace(re,(_,a,b)=>a+'left:'+x+'%;top:'+y+'%;'+b);
+ }
+ // A aba de seleção vazia desaparece da página; os textos técnicos continuam intactos.
+ if(s.includes('<h2 id="panelTitle">Selecione um equipamento</h2>'))s=once(s,'<h2 id="panelTitle">Selecione um equipamento</h2>','<h2 id="panelTitle"></h2>','Título inicial');
+ if(s.includes('<div class="subtitle" id="panelSubtitle">Clique em uma lâmpada ou em um atalho técnico.</div>'))s=once(s,'<div class="subtitle" id="panelSubtitle">Clique em uma lâmpada ou em um atalho técnico.</div>','<div class="subtitle" id="panelSubtitle"></div>','Texto inicial');
+ s=s.replace("panelTitle.textContent = 'Selecione um equipamento';","panelTitle.textContent = '';").replace("panelSubtitle.textContent = 'Clique em uma lâmpada ou em um atalho técnico.';","panelSubtitle.textContent = '';");
+ if(!/<section class="panel" id="panel"[^>]*\shidden(?:\s|>)/.test(s))s=s.replace(/<section class="panel" id="panel"([^>]*)>/,(_,attrs)=>'<section class="panel" id="panel" hidden'+attrs+'>');
+ if(!s.includes('panel.hidden = false;'))s=once(s,'function render(id) {','function render(id) {\n  panel.hidden = false;','Abrir painel ao clicar');
+ const close=s.match(/closeBtn\.addEventListener\('click', \(\) => \{[\s\S]*?\n\}\);/);
+ if(!close)throw Error('Lógica de fechar o painel não localizada.');
+ if(!close[0].includes('panel.hidden = true;'))s=once(s,close[0],close[0].replace("  panel.classList.add('minimized');","  panel.classList.add('minimized');\n  panel.hidden = true;"),'Fechar painel');
+ const viewport=oldV6?'e3908-stage-viewport':'e3908-v7-viewport',zoom=oldV6?'e3908Zoom':'e3908-v7-zoom';
+ if(!oldV6){
+   s=once(s,'<div class="stage-shell">\n      <div class="stage">','<div class="stage-shell">\n      <div class="e3908-v7-viewport" id="e3908-v7-viewport">\n      <div class="stage">','Área de zoom');
+   s=once(s,'    </div>\n  </section>\n\n  <div class="section-title">\n    <h2>Atalhos técnicos</h2>','    </div>\n    </div>\n  </section>\n\n  <div class="section-title">\n    <h2>Atalhos técnicos</h2>','Final da área de zoom');
+   s=once(s,'<h2>Processo interativo</h2>\n    <p>Clique nas lâmpadas para abrir as explicações.</p>','<h2>Processo interativo</h2>\n    <p>Clique nas lâmpadas para abrir as explicações.</p>\n    <button class="ui" id="e3908-v7-zoom" type="button" aria-pressed="false">🔎 Ampliar desenho</button>','Botão ampliar desenho');
+ }
+ // Dock V5 incluído uma única vez, após o desenho, sem duplicar os controles.
+ if(!s.includes('id="e3908-v7-tools"')){
+   const old='  </section>\n\n  <div class="section-title">\n    <h2>Atalhos técnicos</h2>';
+   const newer='  </section>\n\n  <div class="e3908-v7-tools" id="e3908-v7-tools" aria-label="Conteúdo Integral e Laboratório Concept"></div>\n\n  <div class="section-title">\n    <h2>Atalhos técnicos</h2>';
+   s=once(s,old,newer,'Área dos botões V5');
+ }
+ const scope=oldV6?'.stage-viewport':'.e3908-v7-viewport';
+ const css=`${MARK}
+<style id="e3908-v7-final">
+#panel[hidden]{display:none!important}
+${scope}{width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+${scope} .stage{width:100%;min-width:0;max-width:none;aspect-ratio:1280/917!important}
+${scope} .stage img{width:100%;height:100%;display:block;object-fit:fill}
+${scope}.is-zoomed .stage{width:195%}
+${scope} .lamp{width:28px;height:28px;min-width:28px;min-height:28px;padding:0;gap:0;display:flex;align-items:center;justify-content:center}
+${scope} .lamp .bulb{display:block;flex:none;line-height:1}
+${scope} .lamp .lamp-label{position:absolute;left:calc(100% + 5px);top:50%;transform:translateY(-50%);width:max-content;max-width:170px;white-space:normal;pointer-events:none}
+.e3908-v7-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 18px;min-width:0}
+.e3908-v7-tools>#ci-open,.e3908-v7-tools>#lc5-open{position:static!important;inset:auto!important;top:auto!important;bottom:auto!important;right:auto!important;left:auto!important;transform:none!important;display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;max-width:none!important;min-width:0!important;min-height:46px!important;padding:10px 7px!important;margin:0!important;font-size:clamp(11px,3.3vw,14px)!important;line-height:1.2!important;white-space:normal!important;text-align:center!important;box-shadow:none!important;border-radius:12px!important}
+@media(max-width:650px){body{padding:3px}.app{gap:12px}.hero{gap:9px}.hero-main{padding:13px;gap:10px}.hero h1{font-size:clamp(21px,6vw,30px)}.stats{padding:9px;gap:7px}.stat{min-width:0;padding:9px}.stat strong{font-size:19px}.stage-card{padding:3px!important;border-radius:11px}.stage-shell{padding:0!important;border:0!important;border-radius:7px;overflow:hidden}${scope} .stage{border-radius:5px}.section-title{display:flex;flex-wrap:wrap;gap:8px;padding:0 3px}.section-title h2{font-size:16px}.section-title p{font-size:12px}${scope} .lamp{width:26px;height:26px;min-width:26px;min-height:26px}${scope} .bulb{font-size:14px}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quick{min-width:0;padding:10px;border-radius:12px}}
+@media(max-width:370px){.hero-main{padding:11px}.e3908-v7-tools{gap:6px}.quick-grid{gap:7px}}
+@media(min-width:960px){${scope}.is-zoomed .stage{width:145%}}
+</style>`;
+ const behaviour=`<script>
+(()=>{const button=document.getElementById('${zoom}'),view=document.getElementById('${viewport}');
+ if(button&&view){button.addEventListener('click',()=>{let on=view.classList.toggle('is-zoomed');button.textContent=on?'🔎 Tamanho normal':'🔎 Ampliar desenho';button.setAttribute('aria-pressed',String(on));if(!on)view.scrollLeft=0})}
+ const dock=document.getElementById('e3908-v7-tools');if(!dock)return;
+ const mount=()=>{for(const id of ['ci-open','lc5-open']){const el=document.getElementById(id);if(el&&el.parentElement!==dock)dock.appendChild(el)}};
+ new MutationObserver(mount).observe(document.body,{childList:true,subtree:true});mount();
+})();
+<\/script>`;
+ // V6 já possui o listener de zoom, não instalar outro (evita clique duplo).
+ let script=oldV6?behaviour.replace(/if\(button&&view\)\{button\.addEventListener\([\s\S]*?\}\n const dock=/,'const dock='):behaviour;
+ s=once(s,'</body>',css+'\n'+script+'\n</body>','Injeção do refinamento');
+ const imgNow=s.match(/data:image\/(?:png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+/),dataNow=s.match(/const DATA = \{[\s\S]*?\};\s*\nconst panel =/);
+ if(fnv(imgNow?.[0]||'')!==imageHash||fnv(dataNow?.[0]||'')!==dataHash)throw Error('O desenho ou o material técnico não passou pela validação de preservação.');
+ if(s.includes('Selecione um equipamento'))throw Error('O texto “Selecione um equipamento” ainda aparece no código.');
+ if((s.match(/<button class="lamp"/g)||[]).length!==11)throw Error('Quantidade de lâmpadas mudou.');
+ if(!s.includes('panel.hidden = true;')||!s.includes('panel.hidden = false;')||!s.includes('id="e3908-v7-tools"'))throw Error('A interface de abertura e fechamento não passou na verificação.');
+ return s;
+}
+window.E3908V7={correct,COORDS,REPO};
+const status=document.getElementById('status'),btn=document.getElementById('online'),localBtn=document.getElementById('local');
+const say=(message,flag)=>{status.className=flag===true?'ok':flag===false?'err':'';status.textContent=message};
+const download=(text)=>{const blob=new Blob([text],{type:'text/html;charset=utf-8'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='index.html';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},6000)};
+async function generate(fn){btn.disabled=true;localBtn.disabled=true;say('Preparando a atualização...');try{const before=await fn(),after=correct(before);download(after);say('index.html V7 gerado!\nPublique SOMENTE no repositório robexter/E-3908-concept. Desenho e DATA técnico preservados.',true)}catch(e){say('Não foi possível gerar a atualização: '+e.message,false)}finally{btn.disabled=false;localBtn.disabled=false}}
+async function loadGithub(){let errors=[];for(const branch of ['main','master']){const url=`https://raw.githubusercontent.com/robexter/${REPO}/${branch}/index.html?v7=${Date.now()}`;try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);return await r.text()}catch(e){errors.push(branch+': '+e.message)}}throw Error('Acesso ao GitHub falhou ('+errors.join('; ')+'). Use o arquivo local.')}
+btn.addEventListener('click',()=>generate(loadGithub));localBtn.addEventListener('click',()=>{const file=document.getElementById('upload').files[0];if(!file){say('Selecione um arquivo index.html antes de clicar.',false);return}generate(()=>file.text())});
+</script>
+</body></html>
